@@ -13,13 +13,12 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio"
   },
-  "keywords": ["game", "leaderboard", "trpc"],
+  "keywords": ["game", "leaderboard", "rest-api"],
   "author": "",
   "license": "MIT",
   "dependencies": {
     "@office-survivor/common": "workspace:*",
     "@prisma/client": "^5.9.1",
-    "@trpc/server": "^10.45.0",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "zod": "^3.22.4"
