@@ -28,27 +28,41 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Tech Stack
 
-**Client**:
+**Client** (future):
 - Phaser 3 + TypeScript
 - Controls: WASD/Arrow keys + virtual joystick for mobile
 - Static deployment (Vercel/Netlify for single-player)
 
-**Server** (future):
-- Express + tRPC (shared types between client/server)
-- Supabase for auth, leaderboard storage, analytics
-- Socket.IO or Colyseus for multiplayer
+**Server** (current):
+- Express + REST API
+- Prisma ORM with SQLite (dev) / PostgreSQL (prod)
+- Bun runtime for faster development
+- Zod for request validation
+- CORS enabled for web client
+
+**Type Safety**:
+- Monorepo with workspaces: `/server`, `/common`, `/client` (future)
+- `/common` package contains shared Zod schemas and TypeScript types
+- Client and server import from `@office-survivor/common` for consistent validation
 
 ## Project Structure
 
-When setting up the project, organize as:
-- `/src` - TypeScript source code
-  - `/scenes` - Phaser game scenes (menu, gameplay, game over)
-  - `/entities` - Player, enemies, projectiles, pickups
-  - `/systems` - Weapons, upgrades, spawning, collision
-  - `/config` - Game constants, weapon definitions, upgrade trees
-  - `/utils` - Helpers, math utilities
+Current structure:
+- `/common` - **Shared types and Zod schemas**
+  - `/src/schemas` - Zod validation schemas (e.g., `leaderboard.schema.ts`)
+  - `/src/types` - TypeScript types inferred from Zod schemas
+  - Exported as `@office-survivor/common` workspace package
+- `/server` - Backend REST API
+  - `/src/index.ts` - Express server with REST endpoints
+  - `/src/db.ts` - Prisma client and database functions
+  - `/prisma/schema.prisma` - Database schema (Leaderboard model)
+- `/client` - (future) Phaser 3 game client
+  - `/src/scenes` - Phaser game scenes (menu, gameplay, game over)
+  - `/src/entities` - Player, enemies, projectiles, pickups
+  - `/src/systems` - Weapons, upgrades, spawning, collision
+  - `/src/config` - Game constants, weapon definitions, upgrade trees
+  - `/src/utils` - Helpers, math utilities
 - `/public` - Static assets (sprites will go here in Phase 2)
-- `/server` - Backend code (future multiplayer/leaderboard)
 
 ## Core Gameplay Rules
 
@@ -78,15 +92,67 @@ When setting up the project, organize as:
 
 ## Development Commands
 
-Once the project is initialized with package.json, expected commands:
-- `npm install` - Install dependencies
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run test` - Run tests (if configured)
+**Root (monorepo):**
+- `bun install` - Install all workspace dependencies
+- `bun run dev` - Start development server (currently runs server only)
+
+**Server specific:**
+- `cd server && bun run dev` - Start Express server with hot reload
+- `cd server && bun run db:generate` - Generate Prisma client
+- `cd server && bun run db:push` - Sync Prisma schema to database (dev)
+- `cd server && bun run db:migrate` - Create migration (production)
+- `cd server && bun run db:studio` - Open Prisma Studio GUI
+
+**API Endpoints (REST):**
+- `GET /health` - Health check
+- `GET /api/leaderboard?limit=10` - Fetch top scores
+- `POST /api/leaderboard` - Submit score (body: `{playerName, score, survivalTime, character?}`)
+
+## Type Safety Pattern
+
+**How we handle shared types:**
+
+1. **Define Zod schemas in `/common/src/schemas/`:**
+```typescript
+// common/src/schemas/leaderboard.schema.ts
+export const submitScoreSchema = z.object({
+  playerName: z.string().min(1).max(20).trim(),
+  score: z.number().int().positive(),
+  survivalTime: z.number().positive(),
+  character: z.string().optional(),
+});
+```
+
+2. **Infer TypeScript types in `/common/src/types/`:**
+```typescript
+// common/src/types/index.ts
+export type SubmitScoreInput = z.infer<typeof submitScoreSchema>;
+```
+
+3. **Use in server for validation:**
+```typescript
+// server/src/index.ts
+import { submitScoreSchema } from '@office-survivor/common';
+const validated = submitScoreSchema.parse(req.body);
+```
+
+4. **Use in client (future) for type-safe API calls:**
+```typescript
+// client/src/api/leaderboard.ts
+import type { SubmitScoreInput } from '@office-survivor/common';
+function submitScore(data: SubmitScoreInput) { ... }
+```
+
+**Benefits:**
+- Single source of truth for validation rules
+- Runtime validation with Zod on server
+- Compile-time type checking on client
+- No type duplication or drift between client/server
 
 ## Important Notes
 
 - **Phase 1 constraint**: Use only geometric shapes for all entities - validate gameplay before art
+- **Package manager**: Use **bun** (not npm/yarn) for all commands
 - Game design inspired by Vampire Survivors (bullet heaven mechanics)
 - Tone: satirical humor about corporate life, targeting developers and office workers
 - Session length: 5-15 minutes for casual browser play
