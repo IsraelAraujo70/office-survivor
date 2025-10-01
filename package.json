@@ -1,0 +1,19 @@
+{
+  "name": "office-survivor",
+  "version": "1.0.0",
+  "description": "Office Survivor - Roguelite bullet heaven game",
+  "private": true,
+  "workspaces": [
+    "server"
+  ],
+  "scripts": {
+    "dev": "bun run dev:server",
+    "dev:server": "cd server && bun run dev",
+    "build": "bun run build:server",
+    "build:server": "cd server && bun run build",
+    "start": "cd server && bun run start"
+  },
+  "keywords": ["game", "phaser", "roguelite", "typescript"],
+  "author": "",
+  "license": "MIT"
+}
