@@ -4,7 +4,8 @@
   "description": "Office Survivor - Roguelite bullet heaven game",
   "private": true,
   "workspaces": [
-    "server"
+    "server",
+    "common"
   ],
   "scripts": {
     "dev": "bun run dev:server",
