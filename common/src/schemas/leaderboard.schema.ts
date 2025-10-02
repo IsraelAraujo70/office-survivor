@@ -43,3 +43,23 @@ export const leaderboardEntrySchema = z.object({
 export const getLeaderboardSchema = z.object({
   limit: z.number().int().min(1).max(100).default(10).optional(),
 });
+
+/**
+ * Zod schema for leaderboard API response
+ */
+export const leaderboardResponseSchema = z.object({
+  success: z.boolean(),
+  data: z.array(leaderboardEntrySchema),
+});
+
+/**
+ * Zod schema for submit score API response
+ */
+export const submitScoreResponseSchema = z.object({
+  success: z.boolean(),
+  data: z.object({
+    id: z.number().int(),
+    rank: z.number().int(),
+  }).optional(),
+  error: z.string().optional(),
+});

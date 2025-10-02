@@ -2,7 +2,9 @@ import { z } from 'zod';
 import {
   submitScoreSchema,
   leaderboardEntrySchema,
-  getLeaderboardSchema
+  getLeaderboardSchema,
+  leaderboardResponseSchema,
+  submitScoreResponseSchema,
 } from '../schemas/leaderboard.schema';
 
 /**
@@ -13,11 +15,5 @@ import {
 export type SubmitScoreInput = z.infer<typeof submitScoreSchema>;
 export type LeaderboardEntry = z.infer<typeof leaderboardEntrySchema>;
 export type GetLeaderboardInput = z.infer<typeof getLeaderboardSchema>;
-
-/**
- * API Response types
- */
-export interface SubmitScoreResponse {
-  success: boolean;
-  message: string;
-}
+export type LeaderboardResponse = z.infer<typeof leaderboardResponseSchema>;
+export type SubmitScoreResponse = z.infer<typeof submitScoreResponseSchema>;

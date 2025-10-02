@@ -1,0 +1,24 @@
+{
+  "name": "office-survivor-client",
+  "version": "1.0.0",
+  "description": "Office Survivor game client - Phaser 3 roguelite bullet heaven",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": ["game", "phaser", "roguelite", "typescript"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@office-survivor/common": "workspace:*",
+    "phaser": "^3.80.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.11"
+  }
+}
